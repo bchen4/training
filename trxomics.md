@@ -25,6 +25,7 @@ mkdir day3
 cp /data/bootcamp/day3/*cts day3/
 cp /data/bootcamp/day3/SRR1551047*bam day3/
 cp /data/bootcamp/day3/design.pe.txt day3/
+cp /data/bootcamp/day3/combineFeatureCounts.py day3/
 cd day3
 ls
 ```
@@ -45,8 +46,8 @@ featureCoutns will print statistics on the screen. There is one line in the seco
 "Successfully assigned fragments : 376082 (72.3%)"
 
 Depending on how your samples are prepared, this value varies:
-+ If you are using poly-A extraction, we expect this value to be at least 70%
-+ If you are extracting total RNA, this value will be around 50%
++ If you usedoligo-dT priming, we expect this value to be at least 70%
++ If you used random priming, this value will be around 50%
 + When you have a percent less than 40%, you should look into this matter to figure out why
 
 Now Let's take a look at featureCounts results
@@ -63,12 +64,13 @@ There are three parameter you need to provide:
 3. The name of the output file, which is your count matrix.
 
 ```python
+# Use pwd to make sure day3 is your working directory
 ls *.cts > files
 python combineFeatureCounts.py files SRR1551047.cts count.table
 head count.table
 ```
 
-Before we start to do the differential expression analysis, please creat a folder "DE_test" on your Desktop or any place you like and use FTP tool to drag "count.table" and "design.txt" into this folder.
+Before we start to do the differential expression analysis, please creat a folder "DE_test" or anything you like on your computer and use FTP tool to drag "count.table" and "design.pe.txt" into this folder.
 
 
 ###Run DESeq2 for gene differential expression analysis
@@ -95,7 +97,7 @@ library("pheatmap")
 ####Load Data
 ```R
 #Read data matrix and sample file
-cfile<-read.table("counts.table",header=T,row.names=1)
+cfile<-read.table("count.table",header=T,row.names=1)
 coldata<-read.table("design.pe.txt",header=T,sep="\t")
 head(counts)
 head(coldata)
