@@ -26,6 +26,7 @@ cp /data/bootcamp/day3/*cts day3/
 cp /data/bootcamp/day3/SRR1551047*bam day3/
 cp /data/bootcamp/day3/design.pe.txt day3/
 cp /data/bootcamp/day3/combineFeatureCounts.py day3/
+cp /data/bootcamp/day3/stringtie day3/
 cd day3
 ls
 ```
@@ -177,22 +178,22 @@ pheatmap(deG_rld,scale="row",show_rownames = F)
 
 
 ###Run StringTie
-We will only try to do the transcripts quantification.
 
 In order to use Ballgown program afterwards, "-B" should be used so stringTie will generate Ballgown readable results.
+Since this will take a while for all of them to run, please only copy the first command and let it run, and we will use the premade results for the next step.
 
 ```shell
 
-#You should at your home directory
+#Your home directory should be your working directory now
 
-/data/bootcamp/software/stringtie-1.2.4.Linux_x86_64/stringtie -B -G /data/bootcamp/refdb/gencode.gtf -p 6 /data/bootcamp/day3/SRR1551069.dedup.bam -o stringtie/SRR1551069/SRR1551069.gtf
-/data/bootcamp/software/stringtie-1.2.4.Linux_x86_64/stringtie -B -G /data/bootcamp/refdb/gencode.gtf -p 6 /data/bootcamp/day3/SRR1551068.dedup.bam -o stringtie/SRR1551068/SRR1551068.gtf
-/data/bootcamp/software/stringtie-1.2.4.Linux_x86_64/stringtie -B -G /data/bootcamp/refdb/gencode.gtf -p 6 /data/bootcamp/day3/SRR1551055.dedup.bam -o stringtie/SRR1551055/SRR1551055.gtf
-/data/bootcamp/software/stringtie-1.2.4.Linux_x86_64/stringtie -B -G /data/bootcamp/refdb/gencode.gtf -p 6 /data/bootcamp/day3/SRR1551054.dedup.bam -o stringtie/SRR1551054/SRR1551054.gtf
-/data/bootcamp/software/stringtie-1.2.4.Linux_x86_64/stringtie -B -G /data/bootcamp/refdb/gencode.gtf -p 6 /data/bootcamp/day3/SRR1551048.dedup.bam -o stringtie/SRR1551048/SRR1551048.gtf
-/data/bootcamp/software/stringtie-1.2.4.Linux_x86_64/stringtie -B -G /data/bootcamp/refdb/gencode.gtf -p 6 /data/bootcamp/day3/SRR1551047.dedup.bam -o stringtie/SRR1551047/SRR1551047.gtf
-/data/bootcamp/software/stringtie-1.2.4.Linux_x86_64/stringtie -B -G /data/bootcamp/refdb/gencode.gtf -p 6 /data/bootcamp/day3/SRR1550987.dedup.bam -o stringtie/SRR1550987/SRR1550987.gtf
-/data/bootcamp/software/stringtie-1.2.4.Linux_x86_64/stringtie -B -G /data/bootcamp/refdb/gencode.gtf -p 6 /data/bootcamp/day3/SRR1550986.dedup.bam -o stringtie/SRR1550986/SRR1550986.gtf
+/data/bootcamp/software/stringtie-1.2.4.Linux_x86_64/stringtie -B -G /data/bootcamp/refdb/gencode.gtf -p 6 /data/bootcamp/day3/SRR1551069.dedup.bam -o stringtie_out/SRR1551069/SRR1551069.gtf
+/data/bootcamp/software/stringtie-1.2.4.Linux_x86_64/stringtie -B -G /data/bootcamp/refdb/gencode.gtf -p 6 /data/bootcamp/day3/SRR1551068.dedup.bam -o stringtie_out/SRR1551068/SRR1551068.gtf
+/data/bootcamp/software/stringtie-1.2.4.Linux_x86_64/stringtie -B -G /data/bootcamp/refdb/gencode.gtf -p 6 /data/bootcamp/day3/SRR1551055.dedup.bam -o stringtie_out/SRR1551055/SRR1551055.gtf
+/data/bootcamp/software/stringtie-1.2.4.Linux_x86_64/stringtie -B -G /data/bootcamp/refdb/gencode.gtf -p 6 /data/bootcamp/day3/SRR1551054.dedup.bam -o stringtie_out/SRR1551054/SRR1551054.gtf
+/data/bootcamp/software/stringtie-1.2.4.Linux_x86_64/stringtie -B -G /data/bootcamp/refdb/gencode.gtf -p 6 /data/bootcamp/day3/SRR1551048.dedup.bam -o stringtie_out/SRR1551048/SRR1551048.gtf
+/data/bootcamp/software/stringtie-1.2.4.Linux_x86_64/stringtie -B -G /data/bootcamp/refdb/gencode.gtf -p 6 /data/bootcamp/day3/SRR1551047.dedup.bam -o stringtie_out/SRR1551047/SRR1551047.gtf
+/data/bootcamp/software/stringtie-1.2.4.Linux_x86_64/stringtie -B -G /data/bootcamp/refdb/gencode.gtf -p 6 /data/bootcamp/day3/SRR1550987.dedup.bam -o stringtie_out/SRR1550987/SRR1550987.gtf
+/data/bootcamp/software/stringtie-1.2.4.Linux_x86_64/stringtie -B -G /data/bootcamp/refdb/gencode.gtf -p 6 /data/bootcamp/day3/SRR1550986.dedup.bam -o stringtie_out/SRR1550986/SRR1550986.gtf
 
 
 ```
@@ -224,7 +225,7 @@ Files output in Ballgown readable format are:
 + i2t.ctab: table with two columns, i_id and t_id, denoting which introns belong to which transcripts. These ids match the ids in the i_data and t_data tables.
 
 
-While the program is running, please download the stringtie folder with pre-runned results in day3 and "design.pe.txt" to a folder. 
+While the program is running, please download the stringtie folder with pre-runned results in day3 to the folder you made. 
 Now let's take a look at the folder structures.
 For Ballgown to read the folder, it has to be all the ctab of each sample in an individual sample folder, and all sample folder have similar naming scheme, in our case "SRR155", for Ballgown to identify all the samples.
 
@@ -247,9 +248,31 @@ samtbl <- read.table(file=design,header=TRUE,sep='\t')
 bg <- ballgown(dataDir=stdir, samplePattern='SRR155', meas='all')
 ```
 
+Browsing transcriptome data
+```R
+structure(bg)$exon
+structure(bg)$intron
+structure(bg)$trans
+```
+
+Use expr to get expression data
+Basic usage:
+```
+*expr(ballgown_object_name, <EXPRESSION_MEASUREMENT>)
+```
+Where * can be a letter represent different genomic features.
+| Letter | Feature |
+| ------ | -------: |
+| e | Exon |
+|i | Intron |
+|t | Transcript |
+|g | Gene |
+
 Then we are going to make a gene name table for the output file.
 
 The indexes slot of a ballgown object connects the pieces of the assembly and provides other experimental information. indexes(bg) is a list with several components that can be extracted with the $ operator.
+There are some components in indexes:
++ pData:  holds a data frame of phenotype information for the samples in the experiment. This must be created manually. It is **very important** that the rows of pData are in the correct order. Each row corresponds to a sample, and the rows of pData should be ordered the same as the tables in the expr slot. You can check that order by running sampleNames(bg). 
 
 ```
 exon_transcript_table = indexes(bg)$e2t
