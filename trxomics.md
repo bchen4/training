@@ -312,7 +312,7 @@ dim(transcript_fpkm_annotated)
 ```
 Now you should know how to use expr and indexes to get annotated expression tables. Let get down to the diffenetial alternative splicing analysis
 
-```
+```R
 #make phenotype information
 samples <- sampleNames(bg)
 mergetbl <- merge(as.data.frame(samples),samtbl,by.x="samples",by.y="File",all.x=TRUE,sort=FALSE)
