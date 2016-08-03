@@ -276,23 +276,43 @@ head(whole_intron_table)
 gene_expression = gexpr(bg) #try 
 head(gene_expression)
 ```
+You will see a data frame with the expression value. The row names are the tids.
+In order to get the transcript names/gene names, you need to use indexes slot to get the names
 
-
-Then we are going to make a gene name table for the output file.
+Now we are going to make a gene name table for the output file.
 
 The indexes slot of a ballgown object connects the pieces of the assembly and provides other experimental information. indexes(bg) is a list with several components that can be extracted with the $ operator.
 There are some components in indexes:
 + pData:  holds a data frame of phenotype information for the samples in the experiment. This must be created manually. It is **very important** that the rows of pData are in the correct order. Each row corresponds to a sample, and the rows of pData should be ordered the same as the tables in the expr slot. You can check that order by running sampleNames(bg).
-+ t2g: denotes which transcripts belong to which genes.
++ t2g: denotes which transcripts belong to which genes
++ e2t: denotes which exons belong to which transcripts
++ i2t: denotes which introns belong to which transcripts
 
 ```
 #make gene-transcript relation tables, this will be used in the future to generate readable results
 transcript_gene_table = indexes(bg)$t2g
+head(transcript_gene_table)
 transcript_name <- transcriptNames(bg)
+head(transcript_name)
 rownames(transcript_gene_table) <- transcript_name
+head(transcript_gene_table)
 genes <- unique(cbind(geneNames(bg),geneIDs(bg)))
 colnames(genes) <- c('SYMBOL','ENSEMBL')
+```
+Now let try to add the names to expression data frame
 
+```R
+#take a look at the data frame structures again
+head(transcript_fpkm)
+head(transcript_gene_table)
+transcript_fpkm_annotated = merge(transcript_fpkm, transcript_gene_table, by.x="row.names",by.y="t_id",all.x=TRUE)
+head(transcript_fpkm_annotated)
+dim(transcript_fpkm)
+dim(transcript_fpkm_annotated)
+```
+Now you should know how to use expr and indexes to get annotated expression tables. Let get down to the diffenetial alternative splicing analysis
+
+```
 #make phenotype information
 samples <- sampleNames(bg)
 mergetbl <- merge(as.data.frame(samples),samtbl,by.x="samples",by.y="File",all.x=TRUE,sort=FALSE)
@@ -307,8 +327,14 @@ stat_results = stattest(bg, feature='transcript', meas='cov', covariate='group',
 
 r1 <- merge(transcript_gene_table,na.omit(stat_results),by.y='id',by.x='t_id',all.y=TRUE,all.x=FALSE)
 r2 <- merge(genes,r1,by.y='g_id',by.x='ENSEMBL',all.y=TRUE,all.x=FALSE)
-write.table(r2,file='de_altsplice.bg.txt',quote=FALSE,sep='\t',row.names=FALSE)
+#write.table(r2,file='de_altsplice.bg.txt',quote=FALSE,sep='\t',row.names=FALSE)
 
+#check r2
+summary(r2)
+
+#filter the table using different threshlod
+res_q01<-r2[r2$qval<=0.01,]
+write.table(res_q01,file='de_altsplice.txt',quote=FALSE,sep='\t',row.names=FALSE)
 
 plotMeans('ENSG00000024048.10', bg, groupvar='group', meas='cov', colorby='transcript')
 plotTranscripts(gene="ENSG00000024048.10",gown=bg,samples=samples,meas='FPKM', colorby='transcript')
