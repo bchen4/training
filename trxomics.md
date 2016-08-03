@@ -66,7 +66,7 @@ There are three parameter you need to provide:
 
 ```python
 # Use pwd to make sure day3 is your working directory
-ls *.cts > files
+ls SRR*.cts > files
 python combineFeatureCounts.py files SRR1551047.cts count.table
 head count.table
 ```
