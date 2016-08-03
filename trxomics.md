@@ -34,7 +34,7 @@ ls
 Optional: remove the PCR duplicates in your samples (This takes a long time to run one sample, please try it by yourself)
 ```shell
 /data/bootcamp/seqprg/samtools-1.3.1/samtools sort -o SRR1551047.sort.bam SRR1551047.bam
-/data/bootcamp/seqprg/samtools-1.3.1/samtools rmdup SRR1551047.sort.bam  SRR1551047.dedup.bam
+/data/bootcamp/seqprg/samtools-1.3.1/samtools rmdup -S SRR1551047.sort.bam  SRR1551047.dedup.bam
 ```
 
 Second: try to use featureCounts to get counts 
