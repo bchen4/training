@@ -171,7 +171,7 @@ dim(deG)
 Draw heatmap
 ```R
 rld_df <-data.frame(assay(rld))
-deG_rld <-rld_df[rownames(rld_df %in% deG$gene_name，]
+deG_rld <-rld_df[rownames(rld_df) %in% deG$gene_name,]
 pheatmap(deG_rld,scale="row",show_rownames = F)
 ```
 
