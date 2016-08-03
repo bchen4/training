@@ -261,34 +261,47 @@ Basic usage:
 *expr(ballgown_object_name, <EXPRESSION_MEASUREMENT>)
 ```
 Where * can be a letter represent different genomic features.
-| Letter | Feature |
-| ------ | -------: |
-| e | Exon |
-|i | Intron |
-|t | Transcript |
-|g | Gene |
++ t: transcript
++ e: exon
++ i: intron
++ g: gene (Sum up all transcripts belonging to that gene, sometimes this takes a long time)
+
+```R
+transcript_fpkm = texpr(bg, 'FPKM')
+head(transcript_fpkm)
+junction_rcount = iexpr(bg)
+head(junction_rcount)
+whole_intron_table = iexpr(bg, 'all')
+head(whole_intron_table)
+gene_expression = gexpr(bg) #try 
+head(gene_expression)
+```
+
 
 Then we are going to make a gene name table for the output file.
 
 The indexes slot of a ballgown object connects the pieces of the assembly and provides other experimental information. indexes(bg) is a list with several components that can be extracted with the $ operator.
 There are some components in indexes:
-+ pData:  holds a data frame of phenotype information for the samples in the experiment. This must be created manually. It is **very important** that the rows of pData are in the correct order. Each row corresponds to a sample, and the rows of pData should be ordered the same as the tables in the expr slot. You can check that order by running sampleNames(bg). 
++ pData:  holds a data frame of phenotype information for the samples in the experiment. This must be created manually. It is **very important** that the rows of pData are in the correct order. Each row corresponds to a sample, and the rows of pData should be ordered the same as the tables in the expr slot. You can check that order by running sampleNames(bg).
++ t2g: denotes which transcripts belong to which genes.
 
 ```
-exon_transcript_table = indexes(bg)$e2t
+#make gene-transcript relation tables, this will be used in the future to generate readable results
 transcript_gene_table = indexes(bg)$t2g
 transcript_name <- transcriptNames(bg)
 rownames(transcript_gene_table) <- transcript_name
 genes <- unique(cbind(geneNames(bg),geneIDs(bg)))
 colnames(genes) <- c('SYMBOL','ENSEMBL')
 
+#make phenotype information
 samples <- sampleNames(bg)
 mergetbl <- merge(as.data.frame(samples),samtbl,by.x="samples",by.y="File",all.x=TRUE,sort=FALSE)
 pData(bg) = data.frame(id=sampleNames(bg), group=as.character(mergetbl$SampleGroup),subj=as.character(mergetbl$SubjectID))
 phenotype_table = pData(bg)
 
- 
+#testing
 stat_results = stattest(bg, feature='transcript', meas='cov', covariate='group',getFC=TRUE)
+
 #If you want to adjust for individual
 stat_results = stattest(bg, feature='transcript', meas='cov', covariate='group',adjustvars='subj',getFC=TRUE)
 
