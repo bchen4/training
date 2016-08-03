@@ -288,7 +288,7 @@ There are some components in indexes:
 + e2t: denotes which exons belong to which transcripts
 + i2t: denotes which introns belong to which transcripts
 
-```
+```R
 #make gene-transcript relation tables, this will be used in the future to generate readable results
 transcript_gene_table = indexes(bg)$t2g
 head(transcript_gene_table)
