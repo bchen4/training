@@ -7,6 +7,7 @@
 * Peak bed file for each sample (From green center pipeline)
 * Design file
 * Genome annotation files (including TSS, TTS, gene region bed files)
+* Flanking length (length to extend TSS or TTS)
 
 ###Modules that can be processed parallel
 
@@ -31,3 +32,11 @@ R CMD run_diffbind.R design.txt
 ```R
 R CMD run_chipseeker.R
 ```
+
+###Output files
+* Signal heatmap around TSS, gene body and TTS
+* Genomic signal correlation PCA plots
+* Peak correlation heatmap
+* Annotation figures for peaks
+* Differential peaks results (xls files)
+* Annotation for differential peaks
