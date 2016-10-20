@@ -16,9 +16,12 @@
 #Compute matrix using bigwig
 computeMatrix reference-point -S bigwig_file -R Genome_range_bed_file -out matrix_file
 
-#Draw region signal heatmap
+#Draw region signal heatmap， profiles
 plotHeatmap -m matrix_file --out heatmap.pdf
+plotProfile -m matrix_file --out profiles.pdf
 
+#Plots the read/fragment coverage of one or more sets of regions
+plotEnrichment -b file1.bam file2.bam --BED peaks.bed -o enrichment.png
 ```
 ####DiffBind
 
