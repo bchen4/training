@@ -1,0 +1,9 @@
+SampleID	Tissue	SampleGroup	SubjectID	Organism	Race	SampleName	Gender	FullPathToFqR1	FullPathToFqR2
+SRR1551069	Whole.Blood	monocytes	53	Homo sapiens	White	53_Monocytes	female	SRR1551069_1.fastq.gz	SRR1551069_2.fastq.gz
+SRR1551068	Whole.Blood	neutrophils	53	Homo sapiens	White	53_Neutrophils	female	SRR1551068_1.fastq.gz	SRR1551068_2.fastq.gz
+SRR1551055	Whole.Blood	monocytes	21	Homo sapiens	White	21_Monocytes	female	SRR1551055_1.fastq.gz	SRR1551055_2.fastq.gz
+SRR1551054	Whole.Blood	neutrophils	21	Homo sapiens	White	21_Neutrophils	female	SRR1551054_1.fastq.gz	SRR1551054_2.fastq.gz
+SRR1551048	Whole.Blood	monocytes	20	Homo sapiens	White	20_Monocytes	female	SRR1551048_1.fastq.gz	SRR1551048_2.fastq.gz
+SRR1551047	Whole.Blood	neutrophils	20	Homo sapiens	White	20_Neutrophils	female	SRR1551047_1.fastq.gz	SRR1551047_2.fastq.gz
+SRR1550987	Whole.Blood	monocytes	44	Homo sapiens	Hispanic	44_Monocytes	female	SRR1550987_1.fastq.gz	SRR1550987_2.fastq.gz
+SRR1550986	Whole.Blood	neutrophils	44	Homo sapiens	Hispanic	44_Neutrophils	female	SRR1550986_1.fastq.gz	SRR1550986_2.fastq.gz
