@@ -2,16 +2,16 @@
 
 ####Today we are going to do:
 + Use edgeR to normalize data and visualization
-+ Use DESeq2 to do differential expressed genes
++ Use edgeR to do differential expressed genes
 + Differential expressed genes filtering and draw heatmap
 + Use Ballgown to visualize the transcripts and do differential analysis 
 
 
-###Run DEseq2 for gene differential expression analysis
-Open your Rstudio and install DESeq2
+###Run edgeR for gene differential expression analysis
+Open your Rstudio and install edgeR
 ```R
 source("https://bioconductor.org/biocLite.R")
-biocLite("DESeq2")
+biocLite("edgeR")
 ```
 For pheatmap package, click "package"->"install"
 Type 'a' if program asks you if you want to update packages.
@@ -24,15 +24,18 @@ Click "Yes" if prompt window asks you if you want to use a personal library.
 
 After everything finished, load the libraries using
 ```R
-library("DESeq2")
+library("edgeR")
 library("pheatmap")
 ```
 
 ####Load Data
 ```R
+#Set working directory
+#Session-> Set working directory -> choose directory
+
 #Read data matrix and sample file
-cfile<-read.table("count.table",header=T,row.names=1)
-coldata<-read.table("design.pe.txt",header=T,sep="\t")
+cfile<-read.table("RNAseq_count_table.txt",header=T,sep="\t")
+coldata<-read.table("RNAseq_design_pe.txt",header=T,sep="\t")
 head(counts)
 head(coldata)
 
