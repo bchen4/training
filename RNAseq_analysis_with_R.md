@@ -34,33 +34,25 @@ library("pheatmap")
 #Session-> Set working directory -> choose directory
 
 #Read data matrix and sample file
-cfile<-read.table("RNAseq_count_table.txt",header=T,sep="\t")
+cfile<-read.table("RNAseq_count_table.txt",header=T,row.names=1,sep="\t")
 coldata<-read.table("RNAseq_design_pe.txt",header=T,sep="\t")
 head(counts)
 head(coldata)
 
 #Reorder the counts columns to match the order of sample file
 cfile <- cfile[coldata$SampleID]
-dds<-DESeqDataSetFromMatrix(countData=cfile,colData=coldata, design=~SampleGroup)
-```
-There are some other things we need to do before the differential analysis.
-1. Always check the levels to make sure the control is the first level
-```R
-dds$SampleGroup
-```
-You should see:
-"Levels: monocytes neutrophils"
-To be safe, it is always good to re-level the factor level:
-```R
-dds$SampleGroup <- relevel(dds$SampleGroup, ref="monocytes")
+
+#It is good to set your control group label as the baseline. Especially you are going to use intercept
+group<-relevel(factor(coldata$SampleGroup),ref="monocytes")
+cds<-DGEList(cfile,group=group)
 ```
 
-2. Pre-filtering the low-expressed genes. The code below means keep a gene if its counts exceed 10 in at least 4 samples
+Pre-filtering the low-expressed genes. The code below means keep a gene if cpm (counts per million) exceeds 1 in at least 4 samples
 
 ```R
-nrow(dds)
-dds <- dds[ rowSums(counts(dds)>=10) >= 4, ]
-nrow(dds)
+nrow(cds)
+cds <- cds[ rowSums(cpm(cds)>=1) >= 4, ,keep.lib.sizes=FALSE]
+nrow(cds)
 ```
 
 ####Explortory analysis and some visulization
