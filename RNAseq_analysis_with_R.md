@@ -56,10 +56,10 @@ nrow(cds)
 ```
 
 ####Explortory analysis and some visulization
-Use rlog() function to get log2 transformed normalized counts
+Use cpm() function to get log2 transformed normalized counts
 ```R
-rld <- rlog(dds, blind=FALSE)
-plot(assay(rld)[,1:2],pch=16, cex=0.3)
+rld <- cpm(cds, log=TRUE)
+
 ```
 
 **Calculate the distance between sample pairs and do hierarchical clustering**
@@ -70,43 +70,44 @@ plot(hclust(sampleDists))
 
 ```
 
-**PCA plot**
+**MDS plot**
 ```R
-plotPCA(rld, intgroup = c("Tissue"))
+plotMDS(cds, col=colors[group], pch=points[group])
 ```
 
 ####Find differential expressed genes
-DESeq2 enables us to use a single function to do this. This function will print out a message for the various steps it performs.
+
 ```R
-dds <- DESeq(dds)
-res <- results(dds)
-res
-mcols(res, use.names=TRUE)
-summary(res)
+cds<-calcNormFactors(cds)
+cds<-estimateDisp(cds,design)
+fit <- glmFit(cds, design)
 ```
+
 You can also apply some other threshold (smaller p value or bigger logFoldChange value to filter the resutls)
 ```R
 outdf<-cbind(gene_name = rownames(res), data.frame(res))
-write.table(outdf,"deseq2.res.xls",quote=F,sep="\t",row.names=F)
+write.table(outdf,"edgeR.res.xls",quote=F,sep="\t",row.names=F)
 head(outdf)
 
-deG <- outdf[(abs(outdf$log2FoldChange)>=1 & outdf$padj<=0.01),]
-write.table(deG,"deseq2.deG.xls",quote=F,sep="\t",row.names=F)
+deG <- outdf[(abs(outdf$logFC)>=1 & outdf$FDR<=0.01),]
+write.table(deG,"edgeR.deG.xls",quote=F,sep="\t",row.names=F)
 dim(deG)
 
 ```
 
 Draw heatmap
-```R
-rld_df <-data.frame(assay(rld))
-deG_rld <-rld_df[rownames(rld_df) %in% deG$gene_name,]
+```R need to be tested
+deG_rld <-rld_df[rownames(rld) %in% deG$gene_name,]
 pheatmap(deG_rld,scale="row",show_rownames = F)
 ```
 
-####Try to add interaction term
+
 
 ####Try to add a confounder
 
+#### Compare the original results with confounder results
+
+####Try to add interaction term
 
 ###Transcript differential expression analysis using Ballgown
 
