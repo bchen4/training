@@ -122,8 +122,10 @@ dim(deG)
 
 ```
 
+
 Draw heatmap on differential expressed genes
-```R need to be tested
+
+```R
 deG_rld <-rld[rownames(rld) %in% deG$gene_name,]
 pheatmap(deG_rld,scale="row",show_rownames = F)
 ```
