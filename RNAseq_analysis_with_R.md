@@ -227,7 +227,7 @@ library("ballgown")
 Now use the session buttion to change the working directory to "isoform".
 ```R
 stdir <- 'stringtie'
-design <- "design.pe.txt"
+design <- "RNAseq_design_pe.txt"
 samtbl <- read.table(file=design,header=TRUE,sep='\t')
 #make bg object
 bg <- ballgown(dataDir=stdir, samplePattern='SRR155', meas='all')
