@@ -146,7 +146,7 @@ res_w <- topTags(lrt_w, n=dim(cfile)[1],sort.by="logFC") #retrive all genes
 ```
 
 
-####Try to add a variable
+####Try to control for batch effect
 
 ```R
 #Make a design matrix
@@ -166,9 +166,14 @@ deG_b <- outdf_b[(abs(outdf_b$logFC)>=1 & outdf_b$FDR<=0.01),]
 Compare the original and adjusted for batch effect results
 
 ```R
+library(VennDiagram)
 dim(deG)
 dim(deG_b)
-
+overlap_count <- dim(deG[deG$gene_name %in% deG_b$gene_name,])
+grid.newpage()
+draw.pairwise.venn(dim(deG)[1],dim(deG_b)[1],overlap_count, category = c("original", "batch correction"), 
+   lty = rep("blank", 2),, fill = c("light blue", "pink"), alpha = rep(0.5, 2), cat.pos = c(0, 0), 
+    cat.dist = rep(0.025, 2))
 
 ```
 
