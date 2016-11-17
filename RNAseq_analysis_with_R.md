@@ -36,7 +36,7 @@ library("pheatmap")
 #Read data matrix and sample file
 cfile<-read.table("RNAseq_count_table.txt",header=T,row.names=1,sep="\t")
 coldata<-read.table("RNAseq_design_pe.txt",header=T,sep="\t")
-head(counts)
+head(cfile)
 head(coldata)
 
 #Reorder the counts columns to match the order of sample file
@@ -64,23 +64,50 @@ rld <- cpm(cds, log=TRUE)
 
 **Calculate the distance between sample pairs and do hierarchical clustering**
 ```R
-sampleDists <- dist( t( assay(rld) ) )
+sampleDists <- dist(t(rld))
 sampleDists
 plot(hclust(sampleDists))
 
+#Or, you can also use a heatmap
+pheatmap(cor(rld))
+
 ```
 
-**MDS plot**
+**MDS and PCA plot**
 ```R
+#edgeR provides MDA plot function but not PCA
+points<-c(15,16)
+colors<-rep(c("red","blue"),4)
 plotMDS(cds, col=colors[group], pch=points[group])
+legend("topleft", legend=levels(group), pch=points, col=colors, ncol=2)
+
+#Let's try to generate a PCA plot
+library(ggplot2)
+pca <- prcomp(t(rld),center=T, scale=T)
+percentVar <- pca$sdev^2/sum(pca$sdev^2)  #calculate the percentage of variance
+d <- data.frame(PC1 = pca$x[, 1], PC2 = pca$x[, 2], group = group)
+ggplot(data = d, aes_string(x = "PC1", y = "PC2", color = "group")) +
+    geom_point(size = 3) + xlab(paste0("PC1: ", round(percentVar[1] *
+    100), "% variance")) + ylab(paste0("PC2: ", round(percentVar[2] *
+    100), "% variance"))
+
 ```
 
 ####Find differential expressed genes
 
 ```R
+#Make a design matrix
+samplegroup <- factor(coldata$SampleGroup)
+design<-model.matrix(~samplegroup)
+design
+
+#Normalize data and estimate dispersion
 cds<-calcNormFactors(cds)
+cds$samples
 cds<-estimateDisp(cds,design)
 fit <- glmFit(cds, design)
+lrt <- glmLRT(fit,coef=2)
+res <- topTags(lrt, n=dim(cfile)[1],sort.by="logFC") #retrive all genes
 ```
 
 You can also apply some other threshold (smaller p value or bigger logFoldChange value to filter the resutls)
@@ -95,12 +122,11 @@ dim(deG)
 
 ```
 
-Draw heatmap
+Draw heatmap on differential expressed genes
 ```R need to be tested
-deG_rld <-rld_df[rownames(rld) %in% deG$gene_name,]
+deG_rld <-rld[rownames(rld) %in% deG$gene_name,]
 pheatmap(deG_rld,scale="row",show_rownames = F)
 ```
-
 
 
 ####Try to add a confounder
