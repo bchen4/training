@@ -130,12 +130,49 @@ deG_rld <-rld[rownames(rld) %in% deG$gene_name,]
 pheatmap(deG_rld,scale="row",show_rownames = F)
 ```
 
-
-####Try to add a confounder
-
-#### Compare the original results with confounder results
-
 ####Try to add interaction term
+
+```R
+#Make a design matrix
+race <- factor(coldata$Race)
+design_interaction<-model.matrix(~0+samplegroup:race)
+design_interaction
+
+#Re-calculate the dispersion using the new model
+cds<-estimateDisp(cds,design_interaction)
+fit <- glmFit(cds, design_interaction)
+lrt_w <- glmLRT(fit,contrast=c(0,0,-1,1)) #compare neutrophils vs monocyte of White
+res_w <- topTags(lrt_w, n=dim(cfile)[1],sort.by="logFC") #retrive all genes
+```
+
+
+####Try to add a variable
+
+```R
+#Make a design matrix
+subjectid <- factor(coldata$SubjectID)
+design_batch<-model.matrix(~subjectid+samplegroup)
+design_batch
+
+#Re-calculate the dispersion using the new model
+cds<-estimateDisp(cds,design_batch)
+fit <- glmFit(cds, design_batch)
+lrt_b <- glmLRT(fit,coef=5)
+res_b <- topTags(lrt_b, n=dim(cfile)[1],sort.by="logFC") #retrive all genes
+outdf_b<-cbind(gene_name = rownames(res_b), data.frame(res_b))
+deG_b <- outdf_b[(abs(outdf_b$logFC)>=1 & outdf_b$FDR<=0.01),]
+```
+
+Compare the original and adjusted for batch effect results
+
+```R
+dim(deG)
+dim(deG_b)
+
+
+```
+
+
 
 ###Transcript differential expression analysis using Ballgown
 
