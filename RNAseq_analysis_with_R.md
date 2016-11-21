@@ -10,8 +10,8 @@
 ###Run edgeR for gene differential expression analysis
 Open your Rstudio and install edgeR
 ```R
-source("https://bioconductor.org/biocLite.R")
-biocLite("edgeR")
+source("http://bioconductor.org/biocLite.R")
+biocLite("edgeR",suppressUpdates = T)
 ```
 For pheatmap package, click "package"->"install"
 Type 'a' if program asks you if you want to update packages.
@@ -21,6 +21,8 @@ Check "Install dependencies"
 Click "Install"
 
 Click "Yes" if prompt window asks you if you want to use a personal library.
+
+Use the same way to install package "VennDiagram".
 
 After everything finished, load the libraries using
 ```R
@@ -79,17 +81,16 @@ pheatmap(cor(rld))
 points<-c(15,16)
 colors<-rep(c("red","blue"),4)
 plotMDS(cds, col=colors[group], pch=points[group])
-legend("topleft", legend=levels(group), pch=points, col=colors, ncol=2)
+legend("topright", legend=levels(group), pch=points, col=colors, ncol=2)
 
 #Let's try to generate a PCA plot
 library(ggplot2)
 pca <- prcomp(t(rld),center=T, scale=T)
 percentVar <- pca$sdev^2/sum(pca$sdev^2)  #calculate the percentage of variance
 d <- data.frame(PC1 = pca$x[, 1], PC2 = pca$x[, 2], group = group)
-ggplot(data = d, aes_string(x = "PC1", y = "PC2", color = "group")) +
-    geom_point(size = 3) + xlab(paste0("PC1: ", round(percentVar[1] *
-    100), "% variance")) + ylab(paste0("PC2: ", round(percentVar[2] *
-    100), "% variance"))
+ggplot(data = d, aes_string(x = "PC1", y = "PC2", color = "group")) + geom_point(size = 3) + 
+    xlab(paste0("PC1: ", round(percentVar[1] *100), "% variance")) + 
+    ylab(paste0("PC2: ", round(percentVar[2] *100), "% variance"))
 
 ```
 
@@ -106,7 +107,7 @@ cds<-calcNormFactors(cds)
 cds$samples
 cds<-estimateDisp(cds,design)
 fit <- glmFit(cds, design)
-lrt <- glmLRT(fit,coef=2)
+lrt <- glmLRT(fit, coef=2)
 res <- topTags(lrt, n=dim(cfile)[1],sort.by="logFC") #retrive all genes
 ```
 
@@ -169,11 +170,11 @@ Compare the original and adjusted for batch effect results
 library(VennDiagram)
 dim(deG)
 dim(deG_b)
-overlap_count <- dim(deG[deG$gene_name %in% deG_b$gene_name,])
+overlap_count <- dim(deG[deG$gene_name %in% deG_b$gene_name,])[1]
 grid.newpage()
 draw.pairwise.venn(dim(deG)[1],dim(deG_b)[1],overlap_count, category = c("original", "batch correction"), 
-   lty = rep("blank", 2),, fill = c("light blue", "pink"), alpha = rep(0.5, 2), cat.pos = c(0, 0), 
-    cat.dist = rep(0.025, 2))
+   lty = rep("blank", 2), fill = c("light blue", "pink"), alpha = rep(0.5, 2), cat.pos = c(0, 0), 
+    cat.dist = rep(0.025, 2),cat.just = list(c(-1, 1), c(1, 1)))
 
 ```
 
