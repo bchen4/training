@@ -303,7 +303,7 @@ Now you should know how to use expr and indexes to get annotated expression tabl
 ```R
 #make phenotype information
 samples <- sampleNames(bg)
-mergetbl <- merge(as.data.frame(samples),samtbl,by.x="samples",by.y="File",all.x=TRUE,sort=FALSE)
+mergetbl <- merge(as.data.frame(samples),samtbl,by.x="samples",by.y="SampleID",all.x=TRUE,sort=FALSE)
 pData(bg) = data.frame(id=sampleNames(bg), group=as.character(mergetbl$SampleGroup),subj=as.character(mergetbl$SubjectID))
 phenotype_table = pData(bg)
 
