@@ -87,7 +87,7 @@ legend("topright", legend=levels(group), pch=points, col=colors, ncol=2)
 
 #Let's try to generate a PCA plot
 library(ggplot2)
-pca <- prcomp(t(rld),center=T, scale=T)
+pca <- prcomp(t(rld),center=T, scale=T) #You have to scale/normalize the data first
 percentVar <- pca$sdev^2/sum(pca$sdev^2)  #calculate the percentage of variance
 d <- data.frame(PC1 = pca$x[, 1], PC2 = pca$x[, 2], group = group)
 ggplot(data = d, aes_string(x = "PC1", y = "PC2", color = "group")) + geom_point(size = 3) + 
