@@ -39,17 +39,17 @@ library("pheatmap")
 #Session-> Set working directory -> choose directory
 
 #Read data matrix and sample file
-cfile<-read.table("RNAseq_count_table.txt",header=T,row.names=1,sep="\t")
-coldata<-read.table("RNAseq_design_pe.txt",header=T,sep="\t")
+cfile = read.table("RNAseq_count_table.txt",header=T,row.names=1,sep="\t")
+coldata = read.table("RNAseq_design_pe.txt",header=T,sep="\t")
 head(cfile)
 head(coldata)
 
 #Reorder the counts columns to match the order of sample file
-cfile <- cfile[coldata$SampleID]
+cfile = cfile[coldata$SampleID]
 
 #It is good to set your control group label as the baseline. Especially you are going to use intercept
-group <- relevel(factor(coldata$SampleGroup),ref="monocytes")
-cds <- DGEList(cfile,group=group)
+group = relevel(factor(coldata$SampleGroup),ref="monocytes")
+cds = DGEList(cfile,group=group)
 ```
 </details>
 
@@ -61,10 +61,10 @@ The code below means keep a gene if cpm (counts per million) exceeds 1 in at lea
 
 ```R
 nrow(cds)
-cds <- cds[ rowSums(cpm(cds)>=1) >= 4, ,keep.lib.sizes=FALSE]
+cds = cds[ rowSums(cpm(cds)>=1) >= 4, ,keep.lib.sizes=FALSE]
 nrow(cds)
 ```
-</detials>
+</details>
 
 
 #### Explortory analysis and some visulization
@@ -78,7 +78,7 @@ rld <- cpm(cds, log=TRUE)
 <details>
 <summary><B>Calculate the distance between sample pairs and do hierarchical clustering</B></summary>
 ```R
-sampleDists <- dist(t(rld))
+sampleDists = dist(t(rld))
 sampleDists
 plot(hclust(sampleDists))
 ```
