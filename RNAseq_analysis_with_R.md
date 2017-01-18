@@ -33,7 +33,7 @@ library("pheatmap")
 ```
 
 <details>
-<summary>####Load Data</summary>
+<summary><B>Load Data</B></summary>
 ```R
 #Set working directory
 #Session-> Set working directory -> choose directory
@@ -48,35 +48,51 @@ head(coldata)
 cfile <- cfile[coldata$SampleID]
 
 #It is good to set your control group label as the baseline. Especially you are going to use intercept
-group<-relevel(factor(coldata$SampleGroup),ref="monocytes")
-cds<-DGEList(cfile,group=group)
+group <- relevel(factor(coldata$SampleGroup),ref="monocytes")
+cds <- DGEList(cfile,group=group)
 ```
 </details>
-Pre-filtering the low-expressed genes. The code below means keep a gene if cpm (counts per million) exceeds 1 in at least 4 samples
+
+
+<details>
+<summary><B>Pre-filtering the low-expressed genes. </B></summary>
+
+The code below means keep a gene if cpm (counts per million) exceeds 1 in at least 4 samples
 
 ```R
 nrow(cds)
 cds <- cds[ rowSums(cpm(cds)>=1) >= 4, ,keep.lib.sizes=FALSE]
 nrow(cds)
 ```
+</detials>
 
-####Explortory analysis and some visulization
+
+#### Explortory analysis and some visulization
+
 Use cpm() function to get log2 transformed normalized counts
 ```R
 rld <- cpm(cds, log=TRUE)
 
 ```
 
-**Calculate the distance between sample pairs and do hierarchical clustering**
+<details>
+<summary><B>Calculate the distance between sample pairs and do hierarchical clustering</B></summary>
 ```R
 sampleDists <- dist(t(rld))
 sampleDists
 plot(hclust(sampleDists))
+```
+</details>
 
-#Or, you can also use a heatmap
+<details>
+<summary><B>Use a heatmap to show sample correlation </B></summary>
+
+```R
 pheatmap(cor(rld))
 
 ```
+</details>
+
 
 **MDS and PCA plot**
 ```R
