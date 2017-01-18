@@ -94,110 +94,143 @@ pheatmap(cor(rld))
 </details>
 
 
-**MDS and PCA plot**
+**Use MDS and PCA plot to check the relationship of replicates**
+<details>
+<summary> edgeR provides MDA plot function but not PCA </summary>
 ```R
 #edgeR provides MDA plot function but not PCA
-points<-c(15,16)
-colors<-rep(c("red","blue"),4)
+points = c(15,16)
+colors = rep(c("red","blue"),4)
 plotMDS(cds, col=colors[group], pch=points[group])
 legend("topright", legend=levels(group), pch=points, col=colors, ncol=2)
+```
+</details>
 
-#Let's try to generate a PCA plot
+<details>
+<summary> Let's try to generate a PCA plot </summary>
+
+```R
 library(ggplot2)
 pca <- prcomp(t(rld),center=T, scale=T) #You have to scale/normalize the data first
-percentVar <- pca$sdev^2/sum(pca$sdev^2)  #calculate the percentage of variance
+percentVar = pca$sdev^2/sum(pca$sdev^2)  #calculate the percentage of variance
 d <- data.frame(PC1 = pca$x[, 1], PC2 = pca$x[, 2], group = group)
 ggplot(data = d, aes_string(x = "PC1", y = "PC2", color = "group")) + geom_point(size = 3) + 
     xlab(paste0("PC1: ", round(percentVar[1] *100), "% variance")) + 
     ylab(paste0("PC2: ", round(percentVar[2] *100), "% variance"))
 
 ```
+</details>
 
-####Find differential expressed genes
 
+###Find differential expressed genes
+
+<details>
+<summary>Make a design matrix</summary>
 ```R
 #Make a design matrix
 samplegroup <- factor(coldata$SampleGroup)
 design<-model.matrix(~samplegroup)
 design
+```
+</details>
 
+<details>
+<summary>Normalize data and estimate dispersion</summary>
+
+```R
 #Normalize data and estimate dispersion
-cds<-calcNormFactors(cds)
+cds = calcNormFactors(cds)
 cds$samples
-cds<-estimateGLMCommonDisp(cds,design)
-cds<-estimateGLMTrendedDisp(cds,design)
-cds<-estimateGLMTagwiseDisp(cds,design)
+cds <- estimateGLMCommonDisp(cds,design)
+cds <- estimateGLMTrendedDisp(cds,design)
+cds <- estimateGLMTagwiseDisp(cds,design)
 fit <- glmFit(cds, design)
 lrt <- glmLRT(fit, coef=2)
 res <- topTags(lrt, n=dim(cfile)[1],sort.by="logFC") #retrive all genes
 ```
+</details>
+
 
 You can also apply some other threshold (smaller p value or bigger logFoldChange value to filter the resutls)
+
+
 ```R
-outdf<-cbind(gene_name = rownames(res), data.frame(res))
+outdf = cbind(gene_name = rownames(res), data.frame(res))
 write.table(outdf,"edgeR.res.xls",quote=F,sep="\t",row.names=F)
 head(outdf)
 
-deG <- outdf[(abs(outdf$logFC)>=1 & outdf$FDR<=0.01),]
-write.table(deG,"edgeR.deG.xls",quote=F,sep="\t",row.names=F)
+deG = outdf[(abs(outdf$logFC)>=1 && outdf$FDR<=0.01),]
+write.table(deG,'edgeR.deG.xls',quote=F,sep="\t",row.names=F)
 dim(deG)
 
 ```
 
+<details>
 
-Draw heatmap on differential expressed genes
+<summary>Draw heatmap on differential expressed genes</summary>
 
 ```R
-deG_rld <-rld[rownames(rld) %in% deG$gene_name,]
+deG_rld = rld[rownames(rld) %in% deG$gene_name,]
 pheatmap(deG_rld,scale="row",show_rownames = F)
 ```
+</details>
 
-####Try to add interaction term
 
+###Try to add interaction term
+
+<details>
+<summary>Make a design matrix</summary>
 ```R
 #Make a design matrix
 race <- factor(coldata$Race)
 design_interaction<-model.matrix(~0+samplegroup:race)
 design_interaction
+```
+</details>
 
+<details>
+<summary> Re-calculate the dispersion using the new model</summary>
 #Re-calculate the dispersion using the new model
 cds<-estimateDisp(cds,design_interaction)
 fit <- glmFit(cds, design_interaction)
 lrt_w <- glmLRT(fit,contrast=c(0,0,-1,1)) #compare neutrophils vs monocyte of White
 res_w <- topTags(lrt_w, n=dim(cfile)[1],sort.by="logFC") #retrive all genes
 ```
-
+</details>
 
 ####Try to control for batch effect
 
+<details>
+<summary> Make new design matrix and redo the analysis </summary>
 ```R
 #Make a design matrix
 subjectid <- factor(coldata$SubjectID)
-design_batch<-model.matrix(~subjectid+samplegroup)
+design_batch = model.matrix(~subjectid+samplegroup)
 design_batch
 
 #Re-calculate the dispersion using the new model
-cds<-estimateDisp(cds,design_batch)
-fit <- glmFit(cds, design_batch)
+cds <- estimateDisp(cds,design_batch)
+fit <-  glmFit(cds, design_batch)
 lrt_b <- glmLRT(fit,coef=5)
 res_b <- topTags(lrt_b, n=dim(cfile)[1],sort.by="logFC") #retrive all genes
-outdf_b<-cbind(gene_name = rownames(res_b), data.frame(res_b))
-deG_b <- outdf_b[(abs(outdf_b$logFC)>=1 & outdf_b$FDR<=0.01),]
-```
+outdf_b <- cbind(gene_name = rownames(res_b), data.frame(res_b))
 
-Compare the original and adjusted for batch effect results
+```
+</details>
+
+<details>
+<summary>
+Compare the original and adjusted for batch effect results </summary>
 
 ```R
 library(VennDiagram)
 dim(deG)
 dim(deG_b)
-overlap_count <- dim(deG[deG$gene_name %in% deG_b$gene_name,])[1]
-grid.newpage()
-draw.pairwise.venn(dim(deG)[1],dim(deG_b)[1],overlap_count, category = c("original", "batch correction"), 
-   lty = rep("blank", 2), fill = c("light blue", "pink"), alpha = rep(0.5, 2), cat.pos = c(0, 0), 
-    cat.dist = rep(0.025, 2),cat.just = list(c(-1, 1), c(1, 1)))
+overlap_count = dim(deG[deG$gene_name %in% deG_b$gene_name,])[1]
+dim(overlap_count)
 
 ```
+</details>
 
 
 
