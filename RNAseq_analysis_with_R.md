@@ -280,6 +280,8 @@ library("ballgown")
 ```
 
 Now use the session buttion to change the working directory to "isoform".
+<details>
+<summary> Make ballgown object </summary>
 ```R
 stdir <- 'stringtie'
 design <- "RNAseq_design_pe.txt"
@@ -287,8 +289,10 @@ samtbl <- read.table(file=design,header=TRUE,sep='\t')
 #make bg object
 bg <- ballgown(dataDir=stdir, samplePattern='SRR155', meas='all')
 ```
+</details>
 
-Browsing transcriptome data
+
+Browsing transcriptome data 
 ```R
 structure(bg)$exon
 structure(bg)$intron
