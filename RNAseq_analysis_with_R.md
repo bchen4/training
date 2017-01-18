@@ -32,7 +32,8 @@ library("edgeR")
 library("pheatmap")
 ```
 
-####Load Data
+<details>
+<summary>####Load Data</summary>
 ```R
 #Set working directory
 #Session-> Set working directory -> choose directory
@@ -50,7 +51,7 @@ cfile <- cfile[coldata$SampleID]
 group<-relevel(factor(coldata$SampleGroup),ref="monocytes")
 cds<-DGEList(cfile,group=group)
 ```
-
+</details>
 Pre-filtering the low-expressed genes. The code below means keep a gene if cpm (counts per million) exceeds 1 in at least 4 samples
 
 ```R
@@ -107,7 +108,9 @@ design
 #Normalize data and estimate dispersion
 cds<-calcNormFactors(cds)
 cds$samples
-cds<-estimateDisp(cds,design)
+cds<-estimateGLMCommonDisp(cds,design)
+cds<-estimateGLMTrendedDisp(cds,design)
+cds<-estimateGLMTagwiseDisp(cds,design)
 fit <- glmFit(cds, design)
 lrt <- glmLRT(fit, coef=2)
 res <- topTags(lrt, n=dim(cfile)[1],sort.by="logFC") #retrive all genes
