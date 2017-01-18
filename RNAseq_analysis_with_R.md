@@ -1,6 +1,6 @@
 ##BICF R nano course: RNA-seq analysis with R
 
-[Back to main course page](https://portal.biohpc.swmed.edu/content/training/bioinformatics-nanocourses/rintro/)
+[Back to main course page](https://portal.biohpc.swmed.edu/content/training/bioinformatics-nanocourses/rbio/)
 
 ####Today we are going to do:
 + Use edgeR to normalize data and visualization
