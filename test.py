@@ -1,3 +1,17 @@
+
+
+tssTable = pd.read_table("data_files/test/demo.tss_uniq.txt",index_col=[0,1])
+p1p2Table = pd.read_table("data_files/test/demo.p1p2_paper_uniq.txt",index_col=[0,1])
+p1p2Table['secondary TSS']= list(zip(p1p2Table['secondary TSS 5prime'],p1p2Table['secondary TSS 3prime']))
+p1p2Table['primary TSS']= list(zip(p1p2Table['primary TSS 5prime'],p1p2Table['primary TSS 3prime']))
+
+#load trained_transform file, since it was multi-indexing, use the following commend
+transformedParams_train = pd.read_csv("data_files/CRISPRi_trainingdata_trained_transformedPara_header.txt",sep="\t",header=[0,1],tupleize_cols=True,skipinitialspace=True,index_col=0)
+
+#After predict score, add index name to series
+predictedScores_new.index.name="sgID"
+
+
 import subprocess
 
 #specifying a list of parameters to run bowtie with
@@ -14,9 +28,9 @@ alignmentList = [(39,1,'large_data_files/hg19.ensemblTSSflank500b','39_nearTSS')
 
 alignmentColumns = []
 for btThreshold, mflag, bowtieIndex, runname in alignmentList:
-    alignedFile = 'temp_bowtie_files/' + runname + '_aligned.txt'
-    unalignedFile = 'temp_bowtie_files/' + runname + '_unaligned.fq'
-    maxFile = 'temp_bowtie_files/' + runname + '_max.fq'
+    alignedFile = 'demo_temp_bowtie_files/' + runname + '_aligned.txt'
+    unalignedFile = 'demo_temp_bowtie_files/' + runname + '_unaligned.fq'
+    maxFile = 'demo_temp_bowtie_files/' + runname + '_max.fq'
     bowtieString = '/Users/bbc/Tools/bowtie-1.1.2/bowtie -n 3 -l 15 -e '+str(btThreshold)+' -m ' + str(mflag) + ' --nomaqround -a --tryhard -p 16 --chunkmbs 256 ' + bowtieIndex + ' --suppress 5,6,7 --un ' + unalignedFile + ' --max ' + maxFile + ' '+ ' -q '+fqFile+' '+ alignedFile
     print bowtieString
     print subprocess.call(bowtieString, shell=True) #0 means finished without error
