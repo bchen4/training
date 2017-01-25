@@ -14,7 +14,7 @@ Conda has different channels (specified by -c), which are the software hubs. Imp
 Then create an conda enviornment by using:
 ```shell
 conda create -n new_numpy <package list, delmited by space>
-conda create -c r -n new_R r_enssentials
+conda create -c r -n new_R r_essentials
 ```
 
 You need to activate a conda evn to use it
