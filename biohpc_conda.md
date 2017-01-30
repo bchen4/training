@@ -14,7 +14,7 @@ Conda has different channels (specified by -c), which are the software hubs. Imp
 Then create an conda enviornment by using:
 ```shell
 conda create -n new_numpy <package list, delmited by space>
-conda create -c r -n new_R r_essentials
+conda create -c r -n new_R r-essentials
 ```
 
 You need to activate a conda evn to use it
@@ -34,7 +34,27 @@ To view already installed packages:
 conda list
 ```
 
+
+
 You can also use *pip* for to install under home directory by using --user :
 ```python
 pip install --user twobitreader
 ```
+
+
+## Create new env in specific folder
+```shell
+conda create -p /project/shared/bicf_workflow_ref/chipseq_bchen4/ -c r r-essentials
+#Add channels
+conda config --add channels conda-forge
+conda config --add channels r
+conda config --add channels bioconda
+
+```
+
+Install bioconductor in R console:
+```R
+source("http://bioconductor.org/biocLite.R")
+biocLite()
+```
+
