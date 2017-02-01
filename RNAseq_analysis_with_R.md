@@ -214,7 +214,7 @@ library(VennDiagram)
 dim(deG)
 dim(deG_b)
 overlap_count = dim(deG[deG$gene_name %in% deG_b$gene_name,])[1]
-dim(overlap_count)
+overlap_count
 
 ```
 
