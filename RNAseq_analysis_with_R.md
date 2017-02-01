@@ -32,8 +32,7 @@ library("edgeR")
 library("pheatmap")
 ```
 
-<details>
-<summary><B>Load Data</B></summary>
+**Load Data**
 ```R
 #Set working directory
 #Session-> Set working directory -> choose directory
@@ -51,11 +50,10 @@ cfile = cfile[coldata$SampleID]
 group = relevel(factor(coldata$SampleGroup),ref="monocytes")
 cds = DGEList(cfile,group=group)
 ```
-</details>
 
 
-<details>
-<summary><B>Pre-filtering the low-expressed genes. </B></summary>
+
+**Pre-filtering the low-expressed genes. **
 
 The code below means keep a gene if cpm (counts per million) exceeds 1 in at least 4 samples
 
@@ -64,7 +62,7 @@ nrow(cds)
 cds = cds[ rowSums(cpm(cds)>=1) >= 4, ,keep.lib.sizes=FALSE]
 nrow(cds)
 ```
-</details>
+
 
 
 #### Explortory analysis and some visulization
@@ -75,28 +73,27 @@ rld <- cpm(cds, log=TRUE)
 
 ```
 
-<details>
-<summary><B>Calculate the distance between sample pairs and do hierarchical clustering</B></summary>
+**Calculate the distance between sample pairs and do hierarchical clustering**
 ```R
 sampleDists = dist(t(rld))
 sampleDists
 plot(hclust(sampleDists))
 ```
-</details>
 
-<details>
-<summary><B>Use a heatmap to show sample correlation </B></summary>
+
+**Use a heatmap to show sample correlation **
 
 ```R
 pheatmap(cor(rld))
 
 ```
-</details>
+
 
 
 **Use MDS and PCA plot to check the relationship of replicates**
-<details>
-<summary> edgeR provides MDA plot function but not PCA </summary>
+
+
+edgeR provides MDA plot function but not PCA 
 ```R
 #edgeR provides MDA plot function but not PCA
 points = c(15,16)
@@ -104,10 +101,9 @@ colors = rep(c("red","blue"),4)
 plotMDS(cds, col=colors[group], pch=points[group])
 legend("topright", legend=levels(group), pch=points, col=colors, ncol=2)
 ```
-</details>
 
-<details>
-<summary> Let's try to generate a PCA plot </summary>
+
+** Let's try to generate a PCA plot**
 
 ```R
 library(ggplot2)
@@ -119,20 +115,19 @@ ggplot(data = d, aes_string(x = "PC1", y = "PC2", color = "group")) + geom_point
     ylab(paste0("PC2: ", round(percentVar[2] *100), "% variance"))
 
 ```
-</details>
+
 
 
 ###Find differential expressed genes
 
-<details>
-<summary>Make a design matrix</summary>
+**Make a design matrix
 ```R
 #Make a design matrix
 samplegroup <- factor(coldata$SampleGroup)
 design<-model.matrix(~samplegroup)
 design
 ```
-</details>
+
 
 <details>
 <summary>Normalize data and estimate dispersion</summary>
