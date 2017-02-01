@@ -53,7 +53,7 @@ cds = DGEList(cfile,group=group)
 
 
 
-**Pre-filtering the low-expressed genes. **
+**Pre-filtering the low-expressed genes.**
 
 The code below means keep a gene if cpm (counts per million) exceeds 1 in at least 4 samples
 
@@ -120,7 +120,7 @@ ggplot(data = d, aes_string(x = "PC1", y = "PC2", color = "group")) + geom_point
 
 ###Find differential expressed genes
 
-**Make a design matrix
+**Make a design matrix**
 ```R
 #Make a design matrix
 samplegroup <- factor(coldata$SampleGroup)
@@ -129,8 +129,7 @@ design
 ```
 
 
-<details>
-<summary>Normalize data and estimate dispersion</summary>
+**Normalize data and estimate dispersion**
 
 ```R
 #Normalize data and estimate dispersion
@@ -142,7 +141,7 @@ fit <- glmFit(cds, design)
 lrt <- glmLRT(fit, coef=2)
 res <- topTags(lrt, n=dim(cfile)[1],sort.by="logFC") #retrive all genes
 ```
-</details>
+
 
 
 You can also apply some other threshold (smaller p value or bigger logFoldChange value to filter the resutls)
@@ -159,43 +158,38 @@ dim(deG)
 
 ```
 
-<details>
-
-<summary>Draw heatmap on differential expressed genes</summary>
+**Draw heatmap on differential expressed genes**
 
 ```R
 deG_rld = rld[rownames(rld) %in% deG$gene_name,]
 pheatmap(deG_rld,scale="row",show_rownames = F)
 ```
-</details>
+
 
 
 ###Try to add interaction term
 
-<details>
-<summary>Make a design matrix</summary>
+**Make a design matrix**
 ```R
 #Make a design matrix
 race <- factor(coldata$Race)
 design_interaction<-model.matrix(~0+samplegroup:race)
 design_interaction
 ```
-</details>
 
-<details>
-<summary> Re-calculate the dispersion using the new model</summary>
+**Re-calculate the dispersion using the new model**
+```R
 #Re-calculate the dispersion using the new model
 cds<-estimateDisp(cds,design_interaction)
 fit <- glmFit(cds, design_interaction)
 lrt_w <- glmLRT(fit,contrast=c(0,0,-1,1)) #compare neutrophils vs monocyte of White
 res_w <- topTags(lrt_w, n=dim(cfile)[1],sort.by="logFC") #retrive all genes
 ```
-</details>
+
 
 ####Try to control for batch effect
 
-<details>
-<summary> Make new design matrix and redo the analysis </summary>
+** Make new design matrix and redo the analysis**
 ```R
 #Make a design matrix
 subjectid <- factor(coldata$SubjectID)
@@ -210,11 +204,9 @@ res_b <- topTags(lrt_b, n=dim(cfile)[1],sort.by="logFC") #retrive all genes
 outdf_b <- cbind(gene_name = rownames(res_b), data.frame(res_b))
 
 ```
-</details>
 
-<details>
-<summary>
-Compare the original and adjusted for batch effect results </summary>
+
+** Compare the original and adjusted for batch effect results **
 
 ```R
 library(VennDiagram)
@@ -224,7 +216,7 @@ overlap_count = dim(deG[deG$gene_name %in% deG_b$gene_name,])[1]
 dim(overlap_count)
 
 ```
-</details>
+
 
 
 
@@ -274,8 +266,8 @@ library("ballgown")
 ```
 
 Now use the session buttion to change the working directory to "isoform".
-<details>
-<summary> Make ballgown object </summary>
+
+** Make ballgown object **
 ```R
 stdir <- 'stringtie'
 design <- "RNAseq_design_pe.txt"
@@ -283,7 +275,7 @@ samtbl <- read.table(file=design,header=TRUE,sep='\t')
 #make bg object
 bg <- ballgown(dataDir=stdir, samplePattern='SRR155', meas='all')
 ```
-</details>
+
 
 
 Browsing transcriptome data 
