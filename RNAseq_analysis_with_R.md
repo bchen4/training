@@ -141,9 +141,8 @@ design
 #Normalize data and estimate dispersion
 cds = calcNormFactors(cds)
 cds$samples
-cds <- estimateGLMCommonDisp(cds,design)
-cds <- estimateGLMTrendedDisp(cds,design)
-cds <- estimateGLMTagwiseDisp(cds,design)
+cds <- estimateDisp(cds,design)
+
 fit <- glmFit(cds, design)
 lrt <- glmLRT(fit, coef=2)
 res <- topTags(lrt, n=dim(cfile)[1],sort.by="logFC") #retrive all genes
