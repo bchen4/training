@@ -202,6 +202,7 @@ fit <-  glmFit(cds, design_batch)
 lrt_b <- glmLRT(fit,coef=5)
 res_b <- topTags(lrt_b, n=dim(cfile)[1],sort.by="logFC") #retrive all genes
 outdf_b <- cbind(gene_name = rownames(res_b), data.frame(res_b))
+deG_b = outdf_b[(abs(outdf_b$logFC)>=1 && outdf_b$FDR<=0.01),]
 
 ```
 
