@@ -28,9 +28,9 @@ alignmentList = [(39,1,'large_data_files/hg19.ensemblTSSflank500b','39_nearTSS')
 
 alignmentColumns = []
 for btThreshold, mflag, bowtieIndex, runname in alignmentList:
-    alignedFile = 'demo_temp_bowtie_files/' + runname + '_aligned.txt'
-    unalignedFile = 'demo_temp_bowtie_files/' + runname + '_unaligned.fq'
-    maxFile = 'demo_temp_bowtie_files/' + runname + '_max.fq'
+    alignedFile = 'colon_crispri_files/' + runname + '_aligned.txt'
+    unalignedFile = 'colon_crispri_files/' + runname + '_unaligned.fq'
+    maxFile = 'colon_crispri_files/' + runname + '_max.fq'
     bowtieString = '/Users/bbc/Tools/bowtie-1.1.2/bowtie -n 3 -l 15 -e '+str(btThreshold)+' -m ' + str(mflag) + ' --nomaqround -a --tryhard -p 16 --chunkmbs 256 ' + bowtieIndex + ' --suppress 5,6,7 --un ' + unalignedFile + ' --max ' + maxFile + ' '+ ' -q '+fqFile+' '+ alignedFile
     print bowtieString
     print subprocess.call(bowtieString, shell=True) #0 means finished without error
@@ -43,7 +43,7 @@ for btThreshold, mflag, bowtieIndex, runname in alignmentList:
                     sgsAligning.add(line.strip()[1:])
     except IOError: #no sgRNAs exceeded m, so no maxFile created
         sgsAligning = set()                    
-    alignmentColumns.append(libraryTable_new.apply(lambda row: row.name in sgsAligning, axis=1))
+    alignmentColumns.append(colon_crispri_lib_table.apply(lambda row: row.name in sgsAligning, axis=1))
     
 #collate results into a table, and flip the boolean values to yield the sgRNAs that passed filter as True
 alignmentTable = pd.concat(alignmentColumns,axis=1, keys=zip(*alignmentList)[3]).ne(True)
@@ -72,5 +72,5 @@ for (gene, transcript), group in v2Groups:
             
     if len(geneSgIds) < sgRNAsToPick:
         unfinishedTss.append((gene, transcript)) #if the number of accepted sgRNAs is still less than sgRNAsToPick, discard gene
- #If there are not enough sgRNAs, report them all
+ #If there are not enough sgRNAs, report them all 
     newSgIds.extend(geneSgIds)
