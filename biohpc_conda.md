@@ -19,9 +19,9 @@ conda create -c r -n new_R r-essentials
 
 You need to activate a conda evn to use it
 ```shell
-conda activate new_R
+source activate new_R
 #deactivate current conda evn
-conda deactivate
+source deactivate
 ```
 
 When you are inside a conda evn, you can use conda to install the packages you want (suppose we are in new_R):
