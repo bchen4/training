@@ -11,6 +11,25 @@ transformedParams_train = pd.read_csv("data_files/CRISPRi_trainingdata_trained_t
 #After predict score, add index name to series
 predictedScores_new.index.name="sgID"
 
+#increase iteration doing CRISPRa training
+transformedParams_train, estimators = fitParams(paramTable_trainingGuides.loc[activityScores.dropna().index].iloc[geneFold_train], activityScores.loc[activityScores.dropna().index].iloc[geneFold_train], fitTable)
+
+transformedParams_test = transformParams(paramTable_trainingGuides.loc[activityScores.dropna().index].iloc[geneFold_test], fitTable, estimators)
+
+reg = linear_model.ElasticNetCV(l1_ratio=[.5, .75, .9, .99,1], n_jobs=16, max_iter=5000)
+
+scaler = preprocessing.StandardScaler()
+reg.fit(scaler.fit_transform(transformedParams_train), activityScores.loc[activityScores.dropna().index].iloc[geneFold_train])
+predictedScores = pd.Series(reg.predict(scaler.transform(transformedParams_test)), index=transformedParams_test.index)
+testScores = activityScores.loc[activityScores.dropna().index].iloc[geneFold_test]
+
+print 'Prediction AUC-ROC:', metrics.roc_auc_score((testScores >= .75).values, np.array(predictedScores.values,dtype='float64'))
+print 'Prediction R^2:', reg.score(scaler.transform(transformedParams_test), testScores)
+print 'Regression parameters:', reg.l1_ratio_, reg.alpha_
+coefs = pd.DataFrame(zip(*[abs(reg.coef_),reg.coef_]), index = transformedParams_test.columns, columns=['abs','true'])
+print 'Number of features used:', len(coefs) - sum(coefs['abs'] < .00000000001)
+
+
 
 import subprocess
 
@@ -28,9 +47,9 @@ alignmentList = [(39,1,'large_data_files/hg19.ensemblTSSflank500b','39_nearTSS')
 
 alignmentColumns = []
 for btThreshold, mflag, bowtieIndex, runname in alignmentList:
-    alignedFile = 'colon_crispri_files/' + runname + '_aligned.txt'
-    unalignedFile = 'colon_crispri_files/' + runname + '_unaligned.fq'
-    maxFile = 'colon_crispri_files/' + runname + '_max.fq'
+    alignedFile = 'colon_crispra_bowtie_files/' + runname + '_aligned.txt'
+    unalignedFile = 'colon_crispra_bowtie_files/' + runname + '_unaligned.fq'
+    maxFile = 'colon_crispra_bowtie_files/' + runname + '_max.fq'
     bowtieString = '/Users/bbc/Tools/bowtie-1.1.2/bowtie -n 3 -l 15 -e '+str(btThreshold)+' -m ' + str(mflag) + ' --nomaqround -a --tryhard -p 16 --chunkmbs 256 ' + bowtieIndex + ' --suppress 5,6,7 --un ' + unalignedFile + ' --max ' + maxFile + ' '+ ' -q '+fqFile+' '+ alignedFile
     print bowtieString
     print subprocess.call(bowtieString, shell=True) #0 means finished without error
@@ -43,7 +62,7 @@ for btThreshold, mflag, bowtieIndex, runname in alignmentList:
                     sgsAligning.add(line.strip()[1:])
     except IOError: #no sgRNAs exceeded m, so no maxFile created
         sgsAligning = set()                    
-    alignmentColumns.append(colon_crispri_lib_table.apply(lambda row: row.name in sgsAligning, axis=1))
+    alignmentColumns.append(colon_crispra_lib_table.apply(lambda row: row.name in sgsAligning, axis=1))
     
 #collate results into a table, and flip the boolean values to yield the sgRNAs that passed filter as True
 alignmentTable = pd.concat(alignmentColumns,axis=1, keys=zip(*alignmentList)[3]).ne(True)
